@@ -66,14 +66,10 @@ def chunking(sock, body_response):
                 pop_mod = 0
                 while chunk_len - len(temp_chunk) > 0:
                     temp_num = len(split_response[0]) + len(temp_chunk)
-                    temp_num += len(CRLF)
-                    if temp_num == chunk_len:
+                    if temp_num != chunk_len:
                         temp_chunk += CRLF
-                        temp_chunk += split_response[0]
-                        split_response.pop(0)
-                    else:
-                        temp_chunk += split_response[0]
-                        split_response.pop(0)
+                    temp_chunk += split_response[0]
+                    split_response.pop(0)
                 chunked_response += temp_chunk
         if len(split_response) < 10 and temp != b'':
             temp = sock.recv(DEFAULT)

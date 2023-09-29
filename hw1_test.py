@@ -15,9 +15,10 @@ TEST_CASES = ['http://www.example.com',  # most basic example (with no slash)
               'http://info.cern.ch/images/NextEditorBW.gif',  # is an image
               'http://go.com/doesnotexist',  # causes 404
               'http://www.ifyouregisterthisforclassyouareoutofcontrol.com/',  # NXDOMAIN
-              'http://www.asnt.org:8080/Test.html',  # nonstandard port number
-              'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx'  # chunked encoding
-              'http://portquiz.net:8080/'  # Testing different ports
+              'http://www.asnt.org:8080/Test.html',  # nonstandard port number,
+              'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx',  # chunked encoding
+              'http://portquiz.net:8080/',  # Testing different ports,
+              'https://anglesharp.azurewebsites.net/Chunked'
               ]
 
 TEST_CASES_BONUS = ['https://www.google.com/',  # https
