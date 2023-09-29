@@ -32,7 +32,7 @@ def parse_url(url):
     port_num = 80
     if len(check_for_port_num) == 2:
         port_num = int(check_for_port_num[1])
-    return urlparts[0], connect_string, port_num
+    return check_for_port_num[0], connect_string, port_num
 
 
 def chunking(sock, body_response):
@@ -124,7 +124,7 @@ def retrieve_url(url):
     try:
         ip_addr = socket.gethostbyname(url_info[0])
         sock.connect((ip_addr, url_info[2]))
-    except socket.gaierror:
+    except (socket.gaierror, TimeoutError):
         return None
     byte_val = url_info[1].encode()
     sock.sendall(byte_val)
