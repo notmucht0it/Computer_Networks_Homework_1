@@ -1,6 +1,7 @@
-"""
+
+'''
 test cases for a simple http client.
-"""
+'''
 import logging
 import sys
 from urllib.parse import urlparse
@@ -10,26 +11,25 @@ from hw1 import retrieve_url
 
 import requests
 
-TEST_CASES = [#'http://www.example.com',  # most basic example (with no slash)
-              #'http://wonderousshinyinnerspell.neverssl.com/online/',  # another basic example
-              #'http://info.cern.ch/images/NextEditorBW.gif',  # is an image
-              #'http://go.com/doesnotexist',  # causes 404
-              #'http://www.asnt.org:8080/Test.html',  # nonstandard port number,
-              #'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx',  # chunked encoding
-              #'http://portquiz.net:8080/',  # Testing different ports,
-              'https://anglesharp.azurewebsites.net/Chunked'
-              ]
+TEST_CASES = ['http://www.example.com',  # most basic example (with no slash)
+              'http://wonderousshinyinnerspell.neverssl.com/online/',  # another basic example
+              'http://info.cern.ch/images/NextEditorBW.gif',  # is an image
+              'http://go.com/doesnotexist',  # causes 404
+              'http://www.ifyouregisterthisforclassyouareoutofcontrol.com/', # NXDOMAIN
+              'http://www.asnt.org:8080/Test.html', # nonstandard port number
+              'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx' # chunked encoding
+             ]
 
-TEST_CASES_BONUS = [#'https://www.google.com/',  # https
-                    #'https://😻🍕.ws',  # utf-8 in the url
-                    #'https://www.fieggen.com/shoelace'  # redirects to trailing slash
-                    ]
+TEST_CASES_BONUS = ['https://www.google.com/',  # https
+                    'https://😻🍕.ws',  # utf-8 in the url
+                    'https://www.fieggen.com/shoelace'  # redirects to trailing slash
+                   ]
 
 
 def retrieve_url_bonus(url):
-    """
+    '''
     https, redirects, utf-8 in urls!
-    """
+    '''
 
     response = requests.get(url)
     if response.status_code == 200:
@@ -39,9 +39,9 @@ def retrieve_url_bonus(url):
 
 
 def retrieve_url_oracle(url):
-    """
+    '''
     the easiest way to complete this assignment. too bad you can't use it.
-    """
+    '''
 
     scheme = urlparse(url).scheme
     if scheme != 'http':
@@ -54,9 +54,9 @@ def retrieve_url_oracle(url):
 
 
 def compare_output(url, oracle=retrieve_url_oracle):
-    """
+    '''
     compare hw1.py output with requests output for ::url::
-    """
+    '''
     try:
         # download the same page twice to check for dynamic content
         correct_output = oracle(url)
@@ -68,18 +68,16 @@ def compare_output(url, oracle=retrieve_url_oracle):
         logging.debug(
             "something went wrong downloading the page: %s", type(exc).__name__)
         correct_output = None
-    print(correct_output)
+
     try:
         student_output = retrieve_url(url)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc: # pylint: disable=broad-except
         print("uncaught exception ({}) for {}".format(type(exc).__name__, url))
         return
     if correct_output == student_output:
         print("correct output for {}".format(url))
     else:
         print("incorrect output for {}".format(url))
-    print(student_output)
-
 
 def main(args):
     if "--debug" in args:
@@ -91,6 +89,7 @@ def main(args):
     print("and for style points...")
     for testcase in TEST_CASES_BONUS:
         compare_output(testcase, oracle=retrieve_url_bonus)
+
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ def parse_url(url):
 
 def chunking(sock, body_response):
     """Deals with chunk encoding"""
-    chunked_response = b''
+    chunked_response = bytearray()
     split_response = body_response.split(CRLF)
     pop_mod = 0
     chunk_len = int(split_response[0], 16)
@@ -57,7 +57,7 @@ def chunking(sock, body_response):
             if split_response[0] == b'':
                 split_response.pop(0)
             if chunk_len == len(split_response[0]):
-                chunked_response += split_response[0]
+                chunked_response.extend(split_response[0])
                 split_response.pop(0)
                 pop_mod = 0
             else:
@@ -70,10 +70,13 @@ def chunking(sock, body_response):
                         temp_chunk += CRLF
                     temp_chunk += split_response[0]
                     split_response.pop(0)
-                chunked_response += temp_chunk
+                chunked_response.extend(temp_chunk)
+        if len(split_response) > 1 and (split_response[len(split_response - 1)] == b'' and split_response[len(split_response - 2)] == b''):
+            temp = b''
         if len(split_response) < 10 and temp != b'':
             temp = sock.recv(DEFAULT)
             split_response.extend(temp.split(CRLF))
+    print(chunked_response)
     return chunked_response
 
 
@@ -125,3 +128,6 @@ def retrieve_url(url):
     byte_val = url_info[1].encode()
     sock.sendall(byte_val)
     return recv_response(sock)
+
+
+#print(retrieve_url('https://anglesharp.azurewebsites.net/Chunked'))
