@@ -86,14 +86,14 @@ def recv_response(sock):
         if each == b'':
             break
         header_info.append(each.split(b': '))
-    request_valid = int(header_info[0][0].split()[1])
-    if request_valid != 200:
+    if int(header_info[0][0].split()[1]) != 200:
         return None
     transfer_encoding = False
     content_length = 0
     for each in header_info:
         if each[0] == b'Content-Length':
             content_length = int(each[1])
+            break
         if each[0] == b"Transfer-Encoding" and each[1] == b'chunked':
             transfer_encoding = True
             break
@@ -117,4 +117,7 @@ def retrieve_url(url):
         return None
     byte_val = url_info[1].encode()
     sock.sendall(byte_val)
-    return recv_response(sock)
+    ans = recv_response(sock)
+    sock.close()
+    return ans
+
