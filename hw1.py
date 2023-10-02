@@ -36,6 +36,9 @@ def parse_url(url):
 
 
 def recv_response_with_length(sock, amount):
+    """Takes in a given number if it is larger than
+    4096 we only 4096 bits to be received by the socket.
+    Otherwise, we receive exactly what the user requested"""
     if amount > DEFAULT:
         return sock.recv(DEFAULT)
     return sock.recv(amount)
@@ -60,7 +63,8 @@ def chunking(sock, body_response):
             num_of_characters = len(split_response[0])
             split_response = b''
             while len(split_response) < chunk_len:
-                split_response += recv_response_with_length(sock, chunk_len - num_of_characters)
+                temp_num = chunk_len - num_of_characters
+                split_response += recv_response_with_length(sock, temp_num)
             chunked_response += split_response
             temp = sock.recv(DEFAULT)
         split_response = temp.split(CRLF, 1)
@@ -95,7 +99,8 @@ def recv_response(sock):
             break
     if not transfer_encoding:
         while content_length > len(body_response):
-            body_response += recv_response_with_length(sock, content_length - len(body_response))
+            temp_num = content_length - len(body_response)
+            body_response += recv_response_with_length(sock, temp_num)
         return body_response
     return chunking(sock, body_response)
 
