@@ -35,48 +35,37 @@ def parse_url(url):
     return check_for_port_num[0], connect_string, port_num
 
 
+def recv_response_with_length(sock, amount):
+    if amount > DEFAULT:
+        return sock.recv(DEFAULT)
+    return sock.recv(amount)
+
+
 def chunking(sock, body_response):
     """Deals with chunk encoding"""
-    chunked_response = bytearray()
-    split_response = body_response.split(CRLF)
-    pop_mod = 0
+    chunked_response = b''
+    split_response = body_response.split(CRLF, 1)
     chunk_len = int(split_response[0], 16)
     split_response.pop(0)
-    pop_mod += 1
-    temp = b'1'
-    while len(split_response) != 0:
-        if pop_mod % 2 == 0:
-            if split_response[0] == b'':
-                split_response.pop(0)
-            chunk_len = int(split_response[0], 16)
-            if chunk_len == 0:
-                break
-            split_response.pop(0)
-            pop_mod = 1
-        if pop_mod % 2 == 1:
-            if split_response[0] == b'':
-                split_response.pop(0)
-            if chunk_len == len(split_response[0]):
-                chunked_response.extend(split_response[0])
-                split_response.pop(0)
-                pop_mod = 0
+    while chunk_len != 0:
+        if len(split_response[0]) >= chunk_len:
+            chunked_response += split_response[0][:chunk_len]
+            temp = split_response[0][chunk_len:]
+            if temp == CRLF:
+                temp = sock.recv(DEFAULT)
             else:
-                temp_chunk = split_response[0]
-                split_response.pop(0)
-                pop_mod = 0
-                while chunk_len - len(temp_chunk) > 0:
-                    temp_num = len(split_response[0]) + len(temp_chunk)
-                    if temp_num != chunk_len:
-                        temp_chunk += CRLF
-                    temp_chunk += split_response[0]
-                    split_response.pop(0)
-                chunked_response.extend(temp_chunk)
-        if len(split_response) > 1 and (split_response[len(split_response - 1)] == b'' and split_response[len(split_response - 2)] == b''):
-            temp = b''
-        if len(split_response) < 10 and temp != b'':
+                temp = temp.split(CRLF, 1)[1]
+        else:
+            chunked_response += split_response[0]
+            num_of_characters = len(split_response[0])
+            split_response = b''
+            while len(split_response) < chunk_len:
+                split_response += recv_response_with_length(sock, chunk_len - num_of_characters)
+            chunked_response += split_response
             temp = sock.recv(DEFAULT)
-            split_response.extend(temp.split(CRLF))
-    print(chunked_response)
+        split_response = temp.split(CRLF, 1)
+        chunk_len = int(split_response[0], 16)
+        split_response.pop(0)
     return chunked_response
 
 
@@ -106,11 +95,7 @@ def recv_response(sock):
             break
     if not transfer_encoding:
         while content_length > len(body_response):
-            if content_length - len(body_response) < DEFAULT:
-                buf = content_length - len(body_response)
-            else:
-                buf = DEFAULT
-            body_response += sock.recv(buf)
+            body_response += recv_response_with_length(sock, content_length - len(body_response))
         return body_response
     return chunking(sock, body_response)
 
@@ -128,6 +113,3 @@ def retrieve_url(url):
     byte_val = url_info[1].encode()
     sock.sendall(byte_val)
     return recv_response(sock)
-
-
-#print(retrieve_url('https://anglesharp.azurewebsites.net/Chunked'))
