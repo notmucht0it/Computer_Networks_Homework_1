@@ -1,7 +1,7 @@
 """Kevin Monahan
 Computer Networks - Homework 1
 9/29/2023
-Takes a url complient with HTTP 1.1 mostly
+Takes a url compliant with HTTP 1.1 mostly
 and returns the body of the website"""
 import socket
 
@@ -21,14 +21,14 @@ def parse_url(url):
                      "Keep-Alive: 200\r\n"
                      "Connection: keep-alive\r\n\r\n")
     http_part = " HTTP/1.1\r\nHost: "
-    afterhttp = url.split('://', 1)[1]
-    urlparts = afterhttp.split('/', 1)
-    combined_parts = http_part + urlparts[0] + append_to_url
-    if len(urlparts) == 1:
+    after_http = url.split('://', 1)[1]
+    url_parts = after_http.split('/', 1)
+    combined_parts = http_part + url_parts[0] + append_to_url
+    if len(url_parts) == 1:
         connect_string = "GET " + url + combined_parts
     else:
-        connect_string = "GET /" + urlparts[1] + combined_parts
-    check_for_port_num = urlparts[0].split(':')
+        connect_string = "GET /" + url_parts[1] + combined_parts
+    check_for_port_num = url_parts[0].split(':')
     port_num = 80
     if len(check_for_port_num) == 2:
         port_num = int(check_for_port_num[1])
@@ -120,4 +120,3 @@ def retrieve_url(url):
     ans = recv_response(sock)
     sock.close()
     return ans
-

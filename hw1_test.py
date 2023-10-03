@@ -12,7 +12,7 @@ import requests
 
 TEST_CASES = [#'http://www.example.com',  # most basic example (with no slash)
               #'http://wonderousshinyinnerspell.neverssl.com/online/',  # another basic example
-              #'http://info.cern.ch/images/NextEditorBW.gif',  # is an image
+              'http://info.cern.ch/images/NextEditorBW.gif',  # is an image
               #'http://go.com/doesnotexist',  # causes 404
               #'http://www.asnt.org:8080/Test.html',  # nonstandard port number,
               'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx',  # chunked encoding
