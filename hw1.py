@@ -62,12 +62,16 @@ def chunking(sock, body_response):
             chunked_response += split_response[0]
             num_of_characters = len(split_response[0])
             split_response = b''
-            while len(split_response) < chunk_len:
-                temp_num = chunk_len - num_of_characters
+            temp_num = chunk_len - num_of_characters
+            while temp_num != 0:
                 split_response += recv_response_with_length(sock, temp_num)
+                temp_num = chunk_len - len(split_response) - num_of_characters
             chunked_response += split_response
             temp = sock.recv(DEFAULT)
         split_response = temp.split(CRLF, 1)
+        if split_response[0] == b'':
+            split_response = split_response[1]
+            split_response = split_response.split(CRLF, 1)
         chunk_len = int(split_response[0], 16)
         split_response.pop(0)
     return chunked_response
